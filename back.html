@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<style>
+			html {
+				overflow: hidden;
+			}
+			img {
+				width: 80px;
+				height: 80px;
+				cursor: pointer;
+				border-radius: 40px;
+			}
+		</style>
+	</head>
+	<body>
+		<img
+			src="bg.jpg"
+			alt=""
+		/>
+		<script>
+			const img = document.querySelector("img");
+			img.addEventListener("click", () => {
+				window.close();
+			});
+		</script>
+	</body>
+</html>
