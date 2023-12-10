@@ -1,0 +1,30 @@
+
+1 VERSIONINFO
+FILEVERSION 1,2,1,0
+PRODUCTVERSION 1,2,1,0
+FILEOS 0x4
+FILETYPE 0x1
+{
+BLOCK "StringFileInfo"
+{
+	BLOCK "040904B0"
+	{
+		VALUE "CompanyName", "混沌科技"
+		VALUE "FileDescription", "原神抽卡模拟器一班特化版"
+		VALUE "FileVersion", "1.2.1.0"
+		VALUE "InternalName", "genshin_exe"
+		VALUE "LegalCopyright", "Using Apache open-source license, code details can be found on GitHub"
+		VALUE "OriginalFilename", "genshin.exe"
+		VALUE "ProductName", "genshin wish"
+		VALUE "ProductVersion", "1.2.1.0"
+		VALUE "CompanyShortName", "chaos"
+		VALUE "ProductShortName", "genshin"
+		VALUE "LastChange", ""
+	}
+}
+
+BLOCK "VarFileInfo"
+{
+	VALUE "Translation", 0x0409 0x04B0  
+}
+}
