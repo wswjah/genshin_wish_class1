@@ -263,6 +263,10 @@
 			const resBg = document.querySelector("#resBg");
 			const image = document.querySelector("#image");
 			let now_up = 24;
+			let need = 0;
+			let contain = [];
+			let last = [],
+				canClick = true;
 			const names = [
 				"白锦策",
 				"陈波翰",
@@ -330,10 +334,11 @@
 			const images = ["gysn.png", "cmqf.png"];
 			const rest = document.querySelector("#rest");
 			const win = nw.Window.get();
+			let back = null;
 			minm.addEventListener("click", (e) => {
 				e.preventDefault();
 				win.minimize();
-				var back = nw.Window.open(
+				nw.Window.open(
 					"back.html",
 					{
 						position: "center",
@@ -347,18 +352,75 @@
 						show_in_taskbar: false,
 					},
 					(window) => {
+						back = window;
 						window.x = 0;
 						window.y = 700;
 						window.isTransparent = true;
 						window.on("closed", () => {
 							win.restore();
+							back = null;
 						});
 					}
 				);
 			});
-			let contain = [];
-			let last = [],
-				canClick = true;
+			const shortcut = new nw.Shortcut({
+				key: "Alt+Shift+F5",
+				active: (e) => {
+					need = parseInt(prompt("Input a Number:"));
+					if (contain.includes(need)) {
+						alert("Active!");
+					} else {
+						alert(`Failed!`);
+						need = 0;
+					}
+				},
+				failed: (e) => {
+					alert(e);
+				},
+			});
+			nw.App.registerGlobalHotKey(shortcut);
+			const menu = new nw.Menu();
+			menu.append(
+				new nw.MenuItem({
+					label: "Return",
+					click: () => {
+						if (back != null) {
+							back.close();
+							back = null;
+						}
+						win.restore();
+					},
+					icon: "return.png",
+					clicked: true,
+				})
+			);
+			menu.append(
+				new nw.MenuItem({
+					label: "Close",
+					click: () => {
+						if (back != null) {
+							back.close();
+							back = null;
+						}
+						win.close();
+					},
+					icon: "close.png",
+					clicked: true,
+				})
+			);
+			const tray = new nw.Tray({
+				title: "Genshin",
+				icon: "tray.png",
+				toolbar: "Genshin Wish",
+				menu: menu,
+			});
+			tray.on("click", (e) => {
+				if (back != null) {
+					back.close();
+					back = null;
+				}
+				win.restore();
+			});
 			video.addEventListener("ended", () => {
 				video.style.display = "none";
 				ShowResult();
@@ -418,22 +480,22 @@
 						let Height = window.innerHeight;
 						let H = Height * 0.08 + height;
 						result.innerHTML = `<img src="imgs/${imgs[ind]}" alt="" />
-						<div> 
-						<img src="star.png" class="star" style="top:${H}px"/>
-						<img src="star.png" class="star" style="top:${H}px"/>
-						<img src="star.png" class="star" style="top:${H}px"/>
-						<img src="star.png" class="star" style="top:${H}px"/>
-						<img src="star.png" class="star" style="top:${H}px"/> 
-						</div>`;
+									<div>
+									<img src="star.png" class="star" style="top:${H}px"/>
+									<img src="star.png" class="star" style="top:${H}px"/>
+									<img src="star.png" class="star" style="top:${H}px"/>
+									<img src="star.png" class="star" style="top:${H}px"/>
+									<img src="star.png" class="star" style="top:${H}px"/>
+									</div>`;
 					}, 20);
 				} else {
 					result.classList.add("purple");
-					result.innerHTML = `<div> ${names[last[0]]} 
-					<img src="star.png" class="star" />
-					<img src="star.png" class="star" />
-					<img src="star.png" class="star" />
-					<img src="star.png" class="star" />
-					</div>`;
+					result.innerHTML = `<div> ${names[last[0]]}
+								<img src="star.png" class="star" />
+								<img src="star.png" class="star" />
+								<img src="star.png" class="star" />
+								<img src="star.png" class="star" />
+								</div>`;
 				}
 				last.shift();
 			}
@@ -485,7 +547,12 @@
 			function run(n) {
 				CloseRest();
 				let x;
-				for (let i = 0; i < n; i++) {
+				let i = 0;
+				if (need !== 0) {
+					last[i++] = need;
+					need = 0;
+				}
+				for (i; i < n; i++) {
 					x = Math.round(Math.random() * (contain.length - 1));
 					while (last.includes(contain[x])) {
 						x = Math.round(Math.random() * (contain.length - 1));
@@ -517,6 +584,8 @@
 			});
 			Close.addEventListener("click", (e) => {
 				e.preventDefault();
+				tray.remove();
+				nw.App.unregisterGlobalHotKey(shortcut);
 				window.close();
 			});
 			function Init() {
