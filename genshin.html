@@ -590,6 +590,7 @@
 					i = 5;
 				} else if (n === 1 && need !== 0) {
 					last[i++] = need;
+					need = 0;
 				}
 				for (i; i < n; i++) {
 					x = Math.round(Math.random() * (contain.length - 1));
