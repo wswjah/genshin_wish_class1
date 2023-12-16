@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "window": {
       "title": "draw", 
-      "icon": "favicon.png",
+      "icon": "imgs/favicon.png",
       "toolbar": false,
       "frame": false,
       "width": 2000,
