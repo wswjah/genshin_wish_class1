@@ -457,6 +457,12 @@
 				}
 				win.restore();
 			});
+			document.addEventListener("keydown", (e) => {
+				e.preventDefault();
+				if (e.key === "Enter") {
+					resBgClick();
+				}
+			});
 			video.addEventListener("ended", () => {
 				video.style.display = "none";
 				ShowResult();
@@ -610,12 +616,14 @@
 			}
 			start.addEventListener("click", () => {
 				if (!video.paused) return;
+				start.blur();
 				if (contain.length !== 0) {
 					run(1);
 				}
 			});
 			five.addEventListener("click", () => {
 				if (!video.paused) return;
+				five.blur();
 				if (contain.length >= 5) {
 					run(5);
 				}
