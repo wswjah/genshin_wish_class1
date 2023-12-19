@@ -267,7 +267,8 @@
 				needList = [];
 			let contain = [];
 			let last = [],
-				canClick = true;
+				canClick = true,
+				isRunning = false;
 			const names = [
 				"白锦策",
 				"陈波翰",
@@ -336,133 +337,6 @@
 			];
 			const images = ["gysn.png", "cmqf.png"];
 			const rest = document.querySelector("#rest");
-			const win = nw.Window.get();
-			let back = null;
-			minm.addEventListener("click", (e) => {
-				e.preventDefault();
-				win.minimize();
-				nw.Window.open(
-					"back.html",
-					{
-						position: "center",
-						width: 100,
-						height: 100,
-						frame: false,
-						new_instance: true,
-						mixed_context: true,
-						transparent: true,
-						always_on_top: true,
-						show_in_taskbar: false,
-					},
-					(window) => {
-						back = window;
-						window.x = 0;
-						window.y = 700;
-						window.isTransparent = true;
-						window.on("closed", () => {
-							win.restore();
-							back = null;
-						});
-					}
-				);
-			});
-			const AltShiftF5 = new nw.Shortcut({
-				key: "Alt+Shift+F5",
-				active: (e) => {
-					need = parseInt(prompt("Input a Number:"));
-					if (contain.includes(need) || need === 55 || need === 56) {
-						alert("Active!");
-					} else {
-						alert(`Failed!`);
-						need = 0;
-					}
-				},
-				failed: (e) => {
-					alert(e);
-				},
-			});
-			const AltShiftF6 = new nw.Shortcut({
-				key: "Alt+Shift+F6",
-				active: (e) => {
-					let x = prompt(
-						"Input a Array which length is five and separated by commas:"
-					);
-					let flag = true;
-					needList = x.split(",").map((item) => {
-						if (
-							!contain.includes(parseInt(item)) &&
-							parseInt(item) !== 55 &&
-							parseInt(item) !== 56
-						) {
-							flag = false;
-							return 0;
-						}
-						return parseInt(item);
-					});
-					if (needList.length !== 5 || !flag) {
-						alert("Failed!");
-						need = [];
-					} else {
-						alert("Active!");
-					}
-				},
-				failed: (e) => {
-					alert(e);
-				},
-			});
-			nw.App.registerGlobalHotKey(AltShiftF5);
-			nw.App.registerGlobalHotKey(AltShiftF6);
-			const menu = new nw.Menu();
-			menu.append(
-				new nw.MenuItem({
-					label: "Return",
-					click: () => {
-						if (back != null) {
-							back.close();
-							back = null;
-						}
-						win.restore();
-					},
-					icon: "imgs/return.png",
-					clicked: true,
-				})
-			);
-			menu.append(
-				new nw.MenuItem({
-					label: "Close",
-					click: () => {
-						if (back != null) {
-							back.close();
-							back = null;
-						}
-						tray.remove();
-						nw.App.unregisterGlobalHotKey(AltShiftF5);
-						nw.App.unregisterGlobalHotKey(AltShiftF6);
-						win.close();
-					},
-					icon: "imgs/close.png",
-					clicked: true,
-				})
-			);
-			const tray = new nw.Tray({
-				title: "Genshin",
-				icon: "imgs/tray.png",
-				toolbar: "Genshin Wish",
-				menu: menu,
-			});
-			tray.on("click", (e) => {
-				if (back != null) {
-					back.close();
-					back = null;
-				}
-				win.restore();
-			});
-			document.addEventListener("keydown", (e) => {
-				e.preventDefault();
-				if (e.key === "Enter") {
-					resBgClick();
-				}
-			});
 			video.addEventListener("ended", () => {
 				video.style.display = "none";
 				ShowResult();
@@ -529,7 +403,7 @@
 									<img src="imgs/star.png" class="star" style="top:${H}px"/>
 									<img src="imgs/star.png" class="star" style="top:${H}px"/>
 									</div>`;
-					}, 20);
+					}, 50);
 				} else {
 					result.classList.add("purple");
 					result.innerHTML = `<div> ${names[last[0]]}
@@ -550,6 +424,7 @@
 				} else {
 					resBg.style.display = "none";
 					result.style.display = "none";
+					isRunning = false;
 				}
 				canClick = false;
 				setTimeout(() => {
@@ -588,42 +463,40 @@
 			}
 			function run(n) {
 				CloseRest();
-				let x;
-				let i = 0;
+				isRunning = true;
 				if (n === 5 && needList[0]) {
 					last = needList;
 					needList = [];
-					i = 5;
 				} else if (n === 1 && need !== 0) {
-					last[i++] = need;
+					last[0] = need;
 					need = 0;
-				}
-				for (i; i < n; i++) {
-					x = Math.round(Math.random() * (contain.length - 1));
-					while (last.includes(contain[x])) {
+				} else {
+					let x;
+					let i = 0;
+					for (i; i < n; i++) {
 						x = Math.round(Math.random() * (contain.length - 1));
+						while (last.includes(contain[x])) {
+							x = Math.round(
+								Math.random() * (contain.length - 1)
+							);
+						}
+						last[i] = contain[x];
 					}
-					last[i] = contain[x];
 				}
 				ani();
-				setTimeout(() => {
-					isRunning = false;
-				}, 500);
 				contain = contain.filter((item) => {
 					return !last.includes(item);
 				});
 				return;
 			}
 			start.addEventListener("click", () => {
-				if (!video.paused) return;
-				start.blur();
+				if (isRunning) return;
 				if (contain.length !== 0) {
 					run(1);
 				}
 			});
 			five.addEventListener("click", () => {
-				if (!video.paused) return;
-				five.blur();
+				if (isRunning) return;
 				if (contain.length >= 5) {
 					run(5);
 				}
@@ -685,5 +558,6 @@
 				rest.style.display = "none";
 			}
 		</script>
+		<script src="nwjs.js"></script>
 	</body>
 </html>
