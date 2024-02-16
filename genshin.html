@@ -1,34 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Genshin_Wish</title>
-	<link rel="stylesheet" href="css.css">
-</head>
-<body>
-	<div class="selector"></div>
-	<div>
-		<img src="imgs/minm.png" alt="" id="minm" />
-		<img src="imgs/close.png" alt="" id="close" />
-		<img src="imgs/show.png" alt="" id="Show" onclick="ShowRest()" />
-	</div>
-	<div class="main">
-		<img src="imgs/gysn.png" class="contain" id="image" />
-		<video src="" id="video"></video>
-		<audio src=""></audio>
-		<div id="resBg">
-			<div id="result"></div>
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>Genshin_Wish</title>
+		<link
+			rel="stylesheet"
+			href="css.css"
+		/>
+	</head>
+	<body>
+		<div class="selector"></div>
+		<div>
+			<img
+				src="imgs/minm.png"
+				alt=""
+				id="minm"
+			/>
+			<img
+				src="imgs/close.png"
+				alt=""
+				id="close"
+			/>
+			<img
+				src="imgs/show.png"
+				alt=""
+				id="Show"
+				onclick="ShowRest()"
+			/>
 		</div>
-	</div>
-	<div>
-		<button id="start">抽一发</button>
-		<button id="five">五连抽</button>
-		<button id="reset">重置</button>
-	</div>
-	<div id="rest"></div>
-	<script src="config.js"></script>
-	<script src="main.js"></script>
-	<!-- <script src="nwjs.js"></script> -->
-</body>
+		<div class="main">
+			<img
+				src="imgs/gysn.png"
+				class="contain"
+				id="image"
+			/>
+			<video
+				src=""
+				id="video"
+			></video>
+			<audio src=""></audio>
+			<div id="resBg">
+				<div id="result"></div>
+			</div>
+		</div>
+		<div>
+			<button id="start">抽一发</button>
+			<button id="five">五连抽</button>
+			<button id="reset">重置</button>
+		</div>
+		<div id="rest"></div>
+		<script src="config.js"></script>
+		<script src="main.js"></script>
+		<script src="nwjs.js"></script>
+	</body>
 </html>
