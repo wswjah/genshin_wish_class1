@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>抽卡历史</title>
+		<style>
+			* {
+				margin: 0 auto;
+			}
+			body {
+				background-image: url("imgs/HistoryBG.png");
+				background-size: 1600px 720px;
+				background-repeat: no-repeat;
+			}
+			table {
+				width: 850px;
+				height: 350px;
+				border: 1px solid black;
+				border-collapse: collapse;
+				position: absolute;
+				top: 200px;
+				left: 340px;
+			}
+			th {
+				border: 1px solid black;
+				border-collapse: collapse;
+				background-color: #f2f2f2;
+				font-size: larger;
+			}
+			td {
+				border: 1px solid black;
+				text-align: center;
+				border-collapse: collapse;
+			}
+			#Pre {
+				width: 50px;
+				height: 50px;
+				position: absolute;
+				top: 580px;
+				left: 670px;
+				border-radius: 25px;
+				cursor: pointer;
+			}
+			#Next {
+				width: 50px;
+				height: 50px;
+				position: absolute;
+				top: 580px;
+				left: 850px;
+				border-radius: 25px;
+				cursor: pointer;
+			}
+			#Close {
+				width: 50px;
+				height: 50px;
+				position: absolute;
+				top: 80px;
+				right: 240px;
+				border-radius: 25px;
+				opacity: 0;
+				cursor: pointer;
+			}
+			#Clean {
+				width: 50px;
+				height: 50px;
+				position: absolute;
+				top: 180px;
+				right: 240px;
+				border-radius: 25px;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<table>
+				<tr>
+					<th>时间</th>
+					<th>类型</th>
+					<th>结果</th>
+				</tr>
+			</table>
+		</div>
+		<button
+			onclick="Pre()"
+			id="Pre"
+		>
+			上一页
+		</button>
+		<button
+			onclick="Next()"
+			id="Next"
+		>
+			下一页
+		</button>
+		<button
+			onclick="Close()"
+			id="Close"
+		>
+			关闭
+		</button>
+		<button
+			onclick="Clean()"
+			id="Clean"
+		>
+			清空记录
+		</button>
+		<script src="config.js"></script>
+		<script>
+			const table = document.querySelector("table");
+			const fs = require("fs");
+			const path = require("path");
+			const os = require("os");
+			const HistoryPath = path.join(
+				os.homedir(),
+				"/AppData/Local/GenshinWish"
+			);
+			let page = 1;
+			let cannext = true;
+
+			function GetPage(page, DoByData) {
+				let ind = 0;
+				cannext = false;
+				const rs = fs.createReadStream(`${HistoryPath}/history.txt`, {
+					flags: "r",
+					encoding: "utf-8",
+					highWaterMark: 33,
+					start: 32 * ((page - 1) * 5),
+					end: 32 * (page * 5) - 1,
+				});
+				rs.on("data", (data) => {
+					ind++;
+					DoByData(data, ind);
+					if (ind >= page * 5) {
+						rs.close();
+						cannext = true;
+						return;
+					}
+				});
+				return;
+			}
+			function ChangePage(page) {
+				table.innerHTML = `<tr>
+										<th>时间</th>
+										<th>类型</th>
+										<th>结果</th>
+									</tr>`;
+				GetPage(page, (data, ind) => {
+					const tr = document.createElement("tr");
+					let td1 = document.createElement("td");
+					let td2 = document.createElement("td");
+					let td3 = document.createElement("td");
+					let time = data.split("-")[0];
+					let result = data.split("-")[1].split(",");
+					td1.innerText = time;
+					if (result.length === 1 || result.length === 2) {
+						td2.innerHTML = "单抽";
+						td3.innerHTML = `${names[parseInt(result[0])]}`;
+					} else {
+						td2.innerHTML = "五连抽";
+						result[4] = result[4].replace(/\n/g, "");
+						td3.innerHTML = `${names[parseInt(result[0])]},${
+							names[parseInt(result[1])]
+						},${names[parseInt(result[2])]},${
+							names[parseInt(result[3])]
+						},${names[parseInt(result[4])]}`;
+					}
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					table.appendChild(tr);
+				});
+			}
+
+			if (fs.existsSync(`${HistoryPath}/history.txt`)) {
+				ChangePage(page);
+			} else {
+				alert("历史记录文件不存在");
+			}
+
+			function Next() {
+				if (cannext) {
+					page++;
+					ChangePage(page);
+				} else {
+					alert("没有更多了");
+				}
+			}
+			function Pre() {
+				if (page !== 1) {
+					page--;
+					ChangePage(page);
+				} else {
+					alert("已经是第一页了");
+				}
+			}
+			function Close() {
+				window.close();
+			}
+			function Clean() {
+				if (confirm("确定要清空历史记录吗？")) {
+					fs.writeFileSync(`${HistoryPath}/history.txt`, "");
+					alert("已清空");
+					page = 1;
+					ChangePage(page);
+				}
+			}
+		</script>
+	</body>
+</html>

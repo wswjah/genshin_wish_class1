@@ -2,9 +2,9 @@
     "main": "genshin.html", 
     "name": "genshin",
     "description": "Genshin Wish",
-    "version": "1.0.0",
+    "version": "2.3.0",
     "window": {
-      "title": "draw", 
+      "title": "Genshin", 
       "icon": "imgs/favicon.png",
       "toolbar": false,
       "frame": false,

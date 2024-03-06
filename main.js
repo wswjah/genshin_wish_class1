@@ -76,7 +76,7 @@ function ShowResult() {
 	}
 	result.classList.add("DrawBackground");
 	if (ind !== -1) {
-		result.innerHTML = `<img src="imgs/${imgs[ind]}" alt="" />`;
+		result.innerHTML = `<img src="imgs/${imgs[ind]}" alt="" style="display:none;"/>`;
 		setTimeout(() => {
 			let height = document.querySelector("#result img").height;
 			let Height = window.innerHeight;
@@ -184,6 +184,11 @@ function run(n) {
 	contain = contain.filter((item) => {
 		return !last.includes(item);
 	});
+	try {
+		RecordHistory(last);
+	} catch (e) {
+		alert(`历史文件写入失败：${e}`);
+	}
 	return;
 }
 start.addEventListener("click", () => {
@@ -202,13 +207,7 @@ reset.addEventListener("click", () => {
 	Init();
 	alert("重置成功");
 });
-Close.addEventListener("click", (e) => {
-	e.preventDefault();
-	tray.remove();
-	nw.App.unregisterGlobalHotKey(AltShiftF5);
-	nw.App.unregisterGlobalHotKey(AltShiftF6);
-	window.close();
-});
+
 function Init() {
 	contain = [];
 	last = [];
